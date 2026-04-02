@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Corto.Fun FluxBoard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body class="page-terminal">
+  <main class="page-shell">
+    <header class="topbar">
+      <div class="brand">
+        <strong>Corto.Fun Examples</strong>
+        <small>FluxBoard terminal + StarForge launch deck</small>
+      </div>
+      <div class="topbar-right">
+        <div class="desk-mode-switch" aria-label="Desk trade mode">
+          <button id="deskModeLightningButton" class="mode-pill is-active" type="button">Lightning</button>
+          <button id="deskModeLocalButton" class="mode-pill" type="button">Local</button>
+        </div>
+        <div class="auth-tray">
+          <label id="lightningAuthBar" class="auth-field">Lightning API key
+            <input id="lightningApiKey" type="password" placeholder="Paste your Corto.Fun API key" autocomplete="off" />
+          </label>
+          <div id="localWalletBar" class="auth-bar" hidden>
+            <button id="headerConnectWalletButton" class="button-secondary auth-button" type="button">Connect Phantom</button>
+            <span id="walletBadge" class="wallet-pill">Wallet not connected</span>
+          </div>
+        </div>
+        <nav class="nav-links">
+          <a class="nav-link is-active" href="/">FluxBoard</a>
+          <a class="nav-link" href="/launch.html">StarForge</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="terminal-grid">
+      <article class="column-card">
+        <div class="column-head">
+          <div>
+            <h2>New Creates</h2>
+            <p class="column-copy">Fresh launch flow with the latest eight tokens.</p>
+          </div>
+          <span class="pill" id="createsPill">0 cached</span>
+        </div>
+        <div class="pool-chip-row column-filter-row" id="createsFilterRow">
+          <button class="pool-chip is-active" type="button" data-column="creates" data-launchpad="raydium-launchlab">Raydium</button>
+          <button class="pool-chip is-active" type="button" data-column="creates" data-launchpad="pump.fun">Pump</button>
+          <button class="pool-chip is-active" type="button" data-column="creates" data-launchpad="meteora-dbc">Meteora</button>
+          <button class="pool-chip is-active" type="button" data-column="creates" data-launchpad="letsbonk.fun">LetsBonk</button>
+        </div>
+        <div class="column-list" id="createsList"></div>
+      </article>
+
+      <article class="column-card">
+        <div class="column-head">
+          <div>
+            <h2>Curves &gt; 95%</h2>
+            <p class="column-copy">Watch near-fill pressure before migration.</p>
+          </div>
+          <span class="pill is-warn" id="nearFillPill">0 watched</span>
+        </div>
+        <div class="pool-chip-row column-filter-row" id="nearFillFilterRow">
+          <button class="pool-chip is-active" type="button" data-column="nearFill" data-launchpad="raydium-launchlab">Raydium</button>
+          <button class="pool-chip is-active" type="button" data-column="nearFill" data-launchpad="pump.fun">Pump</button>
+          <button class="pool-chip is-active" type="button" data-column="nearFill" data-launchpad="meteora-dbc">Meteora</button>
+          <button class="pool-chip is-active" type="button" data-column="nearFill" data-launchpad="letsbonk.fun">LetsBonk</button>
+        </div>
+        <div class="column-list" id="nearFillList"></div>
+      </article>
+
+      <article class="column-card">
+        <div class="column-head">
+          <div>
+            <h2>Migrated</h2>
+            <p class="column-copy">Post-migration follow-up in the same terminal.</p>
+          </div>
+          <span class="pill is-good" id="migrationsPill">0 watched</span>
+        </div>
+        <div class="pool-chip-row column-filter-row" id="migrationsFilterRow">
+          <button class="pool-chip is-active" type="button" data-column="migrations" data-launchpad="raydium-launchlab">Raydium</button>
+          <button class="pool-chip is-active" type="button" data-column="migrations" data-launchpad="pump.fun">Pump</button>
+          <button class="pool-chip is-active" type="button" data-column="migrations" data-launchpad="meteora-dbc">Meteora</button>
+          <button class="pool-chip is-active" type="button" data-column="migrations" data-launchpad="letsbonk.fun">LetsBonk</button>
+        </div>
+        <div class="column-list" id="migrationsList"></div>
+      </article>
+    </section>
+
+    <p id="statusText" class="desk-status tone-progress" hidden>Preparing runtime.</p>
+    <input id="localPublicKey" type="hidden" />
+
+  </main>
+
+  <div id="toastStack" class="toast-stack" aria-live="polite" aria-atomic="true"></div>
+
+  <div class="modal" id="tradeModal" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div>
+          <div class="kicker">Action deck</div>
+          <h2 id="modalTitle">Token details</h2>
+        </div>
+        <button id="closeModalButton" class="button-ghost" type="button">Close</button>
+      </div>
+
+      <div class="modal-grid">
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h3>Token snapshot</h3>
+              <p class="field-help" id="modalSubtitle">No token selected.</p>
+            </div>
+            <img id="modalImage" class="media-preview" alt="Token preview" hidden />
+          </div>
+
+          <div class="stream-meta" id="modalMeta"></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h3>Buy / Sell controls</h3>
+              <p class="field-help">Preset buttons live inside this modal and stay saved locally for this exact FluxBoard desk.</p>
+            </div>
+          </div>
+
+          <div class="quick-grid" id="quickButtons"></div>
+          <div class="preset-rack-shell">
+            <div class="panel-head preset-rack-head">
+              <div>
+                <h3>HyperPreset Rack</h3>
+                <p class="field-help">Human-friendly labels, custom amounts, and local-only storage.</p>
+              </div>
+              <button id="togglePresetRackButton" class="button-ghost" type="button">Edit rack</button>
+            </div>
+            <div id="presetRackEditor" class="preset-rack-editor" hidden></div>
+          </div>
+
+          <div class="form-grid">
+            <label>Action
+              <select id="tradeAction">
+                <option value="buy">buy</option>
+                <option value="sell">sell</option>
+              </select>
+            </label>
+            <label>Amount
+              <input id="tradeAmount" placeholder="0.05 or 25%" />
+            </label>
+            <label>Amount mode
+              <select id="tradeDenominatedInSol">
+                <option value="true">SOL quote amount</option>
+                <option value="false">Token amount or %</option>
+              </select>
+            </label>
+            <label>Slippage %
+              <input id="tradeSlippage" type="number" min="1" max="99" step="1" value="5" />
+            </label>
+            <label>Priority fee SOL
+              <input id="tradePriorityFee" type="number" min="0.0000001" max="0.01" step="0.0000001" placeholder="0.00025" />
+            </label>
+            <label>Jito tip SOL
+              <input id="tradeJitoTip" type="number" min="0.0002" max="0.01" step="0.0000001" placeholder="0.0003" />
+            </label>
+            <label>User memo
+              <input id="tradeMemo" maxlength="120" placeholder="terminal entry" />
+            </label>
+          </div>
+
+          <p class="field-help" id="tradeModeHint">Buy mode: amount is treated as a SOL budget by default. Switch to token units if you need exact size control.</p>
+
+          <div class="modal-actions">
+            <button id="submitTradeButton" class="button-primary" type="button">Send trade</button>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/@solana/web3.js@1.98.4/lib/index.iife.min.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>

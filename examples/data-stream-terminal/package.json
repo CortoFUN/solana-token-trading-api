@@ -1,0 +1,14 @@
+{
+  "name": "corto-data-stream-terminal-example",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Standalone visual builder and live JSON terminal for the corto.fun data-stream WebSocket API.",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "express": "^4.21.2"
+  }
+}
