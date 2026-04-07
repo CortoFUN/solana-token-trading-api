@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Corto.Fun FluxBoard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/fluxboard.css" />
+</head>
+<body class="page-terminal">
+  <main class="page-shell">
+    <header class="topbar">
+      <div class="brand">
+        <strong>Corto.Fun Examples</strong>
+        <small>FluxBoard terminal + StarForge + Access desk</small>
+      </div>
+      <nav class="topbar-nav nav-links" aria-label="Example navigation">
+        <a class="nav-link is-active" href="/">FluxBoard</a>
+        <a class="nav-link" href="/launch.html">StarForge</a>
+        <a class="nav-link" href="/access.html">Access</a>
+      </nav>
+      <div class="topbar-end">
+        <div class="auth-tray">
+          <div id="lightningAuthBar" class="auth-field auth-field-inline">
+            <input id="lightningApiKey" type="password" placeholder="Lightning API key" autocomplete="off" />
+          </div>
+          <div id="localWalletBar" class="auth-bar" hidden>
+            <button id="headerConnectWalletButton" class="button-secondary auth-button" type="button">Connect Phantom</button>
+            <span id="walletBadge" class="wallet-pill">Wallet not connected</span>
+          </div>
+        </div>
+        <div class="desk-mode-switch" aria-label="Desk trade mode">
+          <button id="deskModeLightningButton" class="mode-pill is-active" type="button">Lightning</button>
+          <button id="deskModeLocalButton" class="mode-pill" type="button">Local</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="terminal-grid">
+      <article class="column-card">
+        <div class="column-head">
+          <div>
+            <h2>New Creates</h2>
+            <p class="column-copy">Fresh launch flow with the latest eight tokens.</p>
+          </div>
+          <span class="pill" id="createsPill">0 cached</span>
+        </div>
+        <div class="pool-chip-row column-filter-row" id="createsFilterRow"></div>
+        <div class="column-list" id="createsList"></div>
+      </article>
+
+      <article class="column-card">
+        <div class="column-head">
+          <div>
+            <h2>Curves &gt; 95%</h2>
+            <p class="column-copy">Watch near-fill pressure before migration.</p>
+          </div>
+          <span class="pill is-warn" id="nearFillPill">0 watched</span>
+        </div>
+        <div class="pool-chip-row column-filter-row" id="nearFillFilterRow"></div>
+        <div class="column-list" id="nearFillList"></div>
+      </article>
+
+      <article class="column-card">
+        <div class="column-head">
+          <div>
+            <h2>Migrated</h2>
+            <p class="column-copy">Post-migration follow-up in the same terminal.</p>
+          </div>
+          <span class="pill is-good" id="migrationsPill">0 watched</span>
+        </div>
+        <div class="pool-chip-row column-filter-row" id="migrationsFilterRow"></div>
+        <div class="column-list" id="migrationsList"></div>
+      </article>
+    </section>
+
+    <p id="statusText" class="desk-status tone-progress">Preparing runtime.</p>
+    <input id="localPublicKey" type="hidden" />
+
+  </main>
+
+  <div id="toastStack" class="toast-stack" aria-live="polite" aria-atomic="true"></div>
+
+  <div class="modal" id="tradeModal" aria-hidden="true">
+    <div class="modal-card trade-modal-card">
+      <div class="modal-head trade-modal-head">
+        <div class="trade-head-copy">
+          <div class="kicker">Trade deck</div>
+        </div>
+        <button id="closeModalButton" class="button-ghost trade-close-button" type="button">Close</button>
+      </div>
+
+      <div class="trade-modal-grid">
+        <section class="panel trade-panel modal-token-panel">
+          <div class="modal-token-identity">
+            <h2 id="modalTitle">Token details</h2>
+            <p class="field-help" id="modalSubtitle">No token selected.</p>
+          </div>
+
+          <div class="modal-token-top">
+            <img id="modalImage" class="modal-token-image" alt="Token preview" hidden />
+            <div class="modal-token-summary">
+              <span id="modalLaunchpadBadge" class="modal-pill modal-pill-launchpad modal-pill-launchpad-sky">Launchpad</span>
+              <span id="modalRiskBadge" class="modal-pill modal-pill-warn">Risk</span>
+              <span id="modalCurveBadge" class="modal-pill modal-pill-violet">Curve</span>
+              <span id="modalLiveStamp" class="modal-pill modal-pill-live">Waiting for live updates</span>
+            </div>
+          </div>
+
+          <div id="modalMintRow" class="modal-mint-row">
+            <span id="modalMint" class="modal-mint">Mint</span>
+            <button id="copyMintButton" class="button-ghost modal-copy-button" type="button" aria-label="Copy mint address">
+              <span class="modal-copy-icon" aria-hidden="true"></span>
+            </button>
+          </div>
+
+          <div class="modal-stat-grid" id="modalMeta"></div>
+        </section>
+
+        <section class="panel trade-panel trade-controls-panel">
+          <input id="tradeAction" type="hidden" value="buy" />
+          <input id="tradeAmountMode" type="hidden" value="sol" />
+          <input id="tradeDenominatedInSol" type="hidden" value="true" />
+
+          <div class="trade-action-strip">
+            <button id="tradeActionBuyButton" class="trade-switch is-active" type="button">Buy</button>
+            <button id="tradeActionSellButton" class="trade-switch" type="button">Sell</button>
+          </div>
+
+          <div class="trade-preset-shell">
+            <div class="trade-preset-head">
+              <div>
+                <strong id="quickPresetLabel">Buy hotkeys</strong>
+                <p class="field-help">Digits 1-6 apply the highlighted row instantly.</p>
+              </div>
+              <button id="togglePresetRackButton" class="button-ghost preset-edit-button" type="button" aria-label="Edit hotkeys">&#9998;</button>
+            </div>
+            <div class="quick-grid trade-quick-grid" id="quickButtons"></div>
+          </div>
+
+          <div class="trade-form-shell">
+            <label class="trade-field trade-field-wide">Amount
+              <input id="tradeAmount" inputmode="decimal" placeholder="0.05" />
+            </label>
+            <label class="trade-field">Slippage %
+              <input id="tradeSlippage" inputmode="decimal" placeholder="5" value="5" />
+            </label>
+            <div class="trade-inline-group trade-field-wide">
+              <span class="trade-field-label">Amount mode</span>
+              <div class="trade-toggle-row">
+                <button id="tradeAmountModePrimaryButton" class="trade-segment is-active" type="button">SOL</button>
+                <button id="tradeAmountModeSecondaryButton" class="trade-segment" type="button">Token</button>
+              </div>
+            </div>
+            <div class="trade-inline-group">
+              <span class="trade-field-label">Priority fee</span>
+              <div class="trade-toggle-row">
+                <button id="tradePriorityModeAutoButton" class="trade-segment is-active" type="button">Auto</button>
+                <button id="tradePriorityModeCustomButton" class="trade-segment" type="button">Custom</button>
+              </div>
+              <input id="tradePriorityFee" inputmode="decimal" placeholder="0.00025" hidden />
+            </div>
+            <div class="trade-inline-group">
+              <span class="trade-field-label">Jito tip</span>
+              <div class="trade-toggle-row trade-toggle-row-triple">
+                <button id="tradeJitoModeOffButton" class="trade-segment" type="button">Off</button>
+                <button id="tradeJitoModeAutoButton" class="trade-segment is-active" type="button">Auto</button>
+                <button id="tradeJitoModeCustomButton" class="trade-segment" type="button">Custom</button>
+              </div>
+              <input id="tradeJitoTip" inputmode="decimal" placeholder="0.0003" hidden />
+            </div>
+            <label class="trade-field trade-field-wide">Memo
+              <input id="tradeMemo" maxlength="120" placeholder="optional desk note" />
+            </label>
+          </div>
+
+          <p class="field-help trade-mode-hint" id="tradeModeHint">Buy mode: amount is treated as a SOL budget by default.</p>
+
+          <div class="modal-actions trade-submit-row">
+            <button id="submitTradeButton" class="button-primary trade-submit-button" type="button">Send buy</button>
+          </div>
+        </section>
+      </div>
+
+      <section class="panel modal-trade-feed" aria-label="Live token trades">
+        <div class="modal-trade-feed-head">
+          <div>
+            <strong>Live token trades</strong>
+            <p id="modalTradeFeedStatus" class="field-help">Open a token to load the last 50 live trades.</p>
+          </div>
+          <span id="modalTradeFeedCount" class="pill">0 events</span>
+        </div>
+        <div id="modalTradeFeedList" class="modal-trade-feed-list"></div>
+      </section>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/@solana/web3.js@1.98.4/lib/index.iife.min.js"></script>
+  <script src="/js/fluxboard.js"></script>
+</body>
+</html>

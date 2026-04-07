@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Corto.Fun Launch Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/starforge.css" />
+</head>
+<body class="page-launch">
+  <main class="page-shell">
+    <header class="topbar">
+      <div class="brand">
+        <strong>Corto.Fun Examples</strong>
+        <small>FluxBoard terminal + StarForge + Access desk</small>
+      </div>
+      <nav class="topbar-nav nav-links" aria-label="Example navigation">
+        <a class="nav-link" href="/">FluxBoard</a>
+        <a class="nav-link is-active" href="/launch.html">StarForge</a>
+        <a class="nav-link" href="/access.html">Access</a>
+      </nav>
+      <div class="topbar-end">
+        <div class="auth-field auth-field-inline">
+          <input id="launchApiKey" type="password" placeholder="Corto API key" autocomplete="off" />
+        </div>
+      </div>
+    </header>
+
+    <section class="launch-tools-shell">
+      <div class="launch-tool-grid">
+        <article class="launch-card launch-tool-card launch-tool-create">
+          <div class="launch-tool-head">
+            <div class="launch-tool-head-main">
+              <h1 id="launchTitle">Token create</h1>
+              <p id="launchSubtitle" class="launch-tool-copy">Pump Fun launch with optional dev buy and Bonk launch with selectable migrate mode.</p>
+            </div>
+          </div>
+
+          <form id="createForm" class="launch-form-compact" enctype="multipart/form-data">
+            <div class="launch-field-shell launch-platform-picker launch-field-span-2">
+              <span class="field-title">Platform</span>
+              <div class="launch-platform-toggle" role="tablist" aria-label="Create platform">
+                <button class="launch-platform-button is-active" type="button" data-platform-target="create" data-platform-value="pump" aria-pressed="true">
+                  <img src="/img/pumpfun.png" alt="" />
+                  <span class="launch-platform-copy">
+                    <strong>Pump Fun</strong>
+                    <small>pump.fun</small>
+                  </span>
+                </button>
+                <button class="launch-platform-button" type="button" data-platform-target="create" data-platform-value="letsbonk" aria-pressed="false">
+                  <img src="/img/bonk.png" alt="" />
+                  <span class="launch-platform-copy">
+                    <strong>LetsBonk</strong>
+                    <small>letsbonk.fun</small>
+                  </span>
+                </button>
+              </div>
+              <small class="field-help">Choose the launch builder first. Only fields for the selected platform stay visible below.</small>
+              <input id="createPlatform" name="platform" type="hidden" value="pump" />
+            </div>
+            <label class="launch-field-shell">Name
+              <input id="createName" name="name" maxlength="32" placeholder="Corto Nova" required />
+              <small class="field-help">Public token name shown in wallets and launch UIs.</small>
+            </label>
+            <label class="launch-field-shell">Symbol
+              <input id="createSymbol" name="symbol" maxlength="10" placeholder="NOVA" required />
+              <small class="field-help">Short ticker. Keep it compact so cards and pool screens do not clip it.</small>
+            </label>
+            <label class="launch-field-shell launch-platform-field" data-platform-visible="letsbonk">Migrate
+              <select id="createMigrateType" name="migrateType">
+                <option value="amm">amm</option>
+                <option value="cpmm">cpmm</option>
+              </select>
+              <small class="field-help">LetsBonk only. Select where the token migrates after launch completion.</small>
+            </label>
+            <label class="launch-field-shell">Dev buy
+              <select id="createDevBuyEnabled" name="devBuyEnabled">
+                <option value="false">off</option>
+                <option value="true">on</option>
+              </select>
+              <small class="field-help">Enable an optional creator buy in the same create flow.</small>
+            </label>
+            <label id="createDevBuySolField" class="launch-field-shell" hidden>Dev buy SOL
+              <input id="createDevBuySol" name="devBuySol" type="number" min="0.000001" max="10" step="0.000001" placeholder="0.05" />
+              <small class="field-help">Used only when dev buy is enabled.</small>
+            </label>
+            <label class="launch-field-shell launch-platform-field" data-platform-visible="pump">Cashback
+              <select id="createCashbackEnabled" name="cashbackEnabled">
+                <option value="true">on</option>
+                <option value="false">off</option>
+              </select>
+              <small class="field-help">Pump Fun only. Toggles cashback flow for the builder request.</small>
+            </label>
+
+            <div class="full launch-copy-band">
+              <div class="launch-copy-main">
+                <label class="launch-description-field">Description
+                  <textarea id="createDescription" name="description" maxlength="600" placeholder="Short launch description" required></textarea>
+                  <small class="field-help">Short public description for the launch card. Fixed-size field.</small>
+                </label>
+
+                <div class="launch-social-submit-band">
+                  <label class="launch-field-shell">Website
+                    <input id="createWebsite" name="website" placeholder="https://example.com" />
+                    <small class="field-help">Optional project site.</small>
+                  </label>
+                  <label class="launch-field-shell">Twitter
+                    <input id="createTwitter" name="twitter" placeholder="https://x.com/yourproject" />
+                    <small class="field-help">Optional X profile.</small>
+                  </label>
+                  <label class="launch-field-shell">Telegram
+                    <input id="createTelegram" name="telegram" placeholder="https://t.me/yourproject" />
+                    <small class="field-help">Optional Telegram community link.</small>
+                  </label>
+                  <button id="createSubmitButton" class="button-primary" type="submit">Create token</button>
+                </div>
+              </div>
+
+              <div class="upload-field required-field launch-image-stack">
+                <div class="launch-upload-head">
+                  <span class="field-title">Image</span>
+                  <small class="upload-note" id="createImageNote">PNG, JPG, WEBP</small>
+                </div>
+                <input id="createImage" class="upload-input" name="image" type="file" accept="image/png,image/jpeg,image/webp" required />
+                <div id="createImageCard" class="upload-card launch-upload-card" role="button" tabindex="0" aria-label="Select token image">
+                  <div id="createImageEmpty" class="upload-empty">
+                    <span class="upload-plus">+</span>
+                    <span class="upload-copy">
+                      <strong>Select image</strong>
+                      <small>Drop or click</small>
+                    </span>
+                  </div>
+                  <img id="createImageThumb" alt="Token image preview" hidden />
+                  <div id="createImageOverlay" class="upload-overlay" hidden>Replace image</div>
+                  <button id="createImageRemove" class="upload-remove" type="button" aria-label="Remove selected image" hidden>×</button>
+                </div>
+                <small class="field-help">Square preview box. The container stays fixed while the image fits inside it.</small>
+              </div>
+            </div>
+
+            <div class="full launch-submit-row">
+              <div id="createStatusBar" class="launch-inline-status" data-tone="idle">
+                <div class="launch-inline-main">
+                  <strong id="createStatusText">Idle. Ready to create.</strong>
+                  <span id="createSignature">No tx yet.</span>
+                </div>
+                <a id="createSolscan" class="nav-link launch-inline-link" href="#" target="_blank" rel="noreferrer noopener">Solscan</a>
+              </div>
+            </div>
+          </form>
+        </article>
+
+        <article class="launch-card launch-tool-card launch-tool-claim">
+          <div class="launch-tool-head launch-tool-head-claim">
+            <div class="launch-tool-head-main">
+              <h2>Rewards</h2>
+              <p id="claimSubtitle" class="launch-tool-copy">Pump Fun cashback or LetsBonk creator fee from the same desk.</p>
+            </div>
+          </div>
+
+          <form id="claimForm" class="launch-claim-form">
+            <div class="launch-field-shell launch-platform-picker">
+              <span class="field-title">Platform</span>
+              <div class="launch-platform-toggle launch-platform-toggle-claim" role="tablist" aria-label="Claim platform">
+                <button class="launch-platform-button is-active" type="button" data-platform-target="claim" data-platform-value="pump" aria-pressed="true">
+                  <img src="/img/pumpfun.png" alt="" />
+                  <span class="launch-platform-copy">
+                    <strong>Pump Fun</strong>
+                    <small>cashback</small>
+                  </span>
+                </button>
+                <button class="launch-platform-button" type="button" data-platform-target="claim" data-platform-value="letsbonk" aria-pressed="false">
+                  <img src="/img/bonk.png" alt="" />
+                  <span class="launch-platform-copy">
+                    <strong>LetsBonk</strong>
+                    <small>creator fee</small>
+                  </span>
+                </button>
+              </div>
+              <small class="field-help">Pick the reward source first: Pump Fun cashback or LetsBonk creator fee.</small>
+              <input id="claimPlatform" name="platform" type="hidden" value="pump" />
+            </div>
+            <button id="claimSubmitButton" class="button-secondary" type="submit">Claim now</button>
+            <div id="claimStatusBar" class="launch-inline-status" data-tone="idle">
+              <div class="launch-inline-main">
+                <strong id="claimStatusText">Idle. Ready to claim.</strong>
+                <span id="claimSignature">No claim tx yet.</span>
+              </div>
+              <a id="claimSolscan" class="nav-link launch-inline-link" href="#" target="_blank" rel="noreferrer noopener">Solscan</a>
+            </div>
+          </form>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <div id="toastStack" class="toast-stack" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="/js/starforge.js"></script>
+</body>
+</html>

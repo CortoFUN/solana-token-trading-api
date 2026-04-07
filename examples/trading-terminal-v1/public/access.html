@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Corto.Fun Access Desk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/access.css" />
+</head>
+<body class="page-access">
+  <main class="page-shell access-shell">
+    <header class="topbar">
+      <div class="brand">
+        <strong>Corto.Fun Examples</strong>
+        <small>FluxBoard terminal + StarForge + Access desk</small>
+      </div>
+      <nav class="topbar-nav nav-links" aria-label="Example navigation">
+        <a class="nav-link" href="/">FluxBoard</a>
+        <a class="nav-link" href="/launch.html">StarForge</a>
+        <a class="nav-link is-active" href="/access.html">Access</a>
+      </nav>
+      <div class="topbar-end">
+        <div class="auth-field auth-field-inline access-header-key access-secret-input">
+          <input id="accessHeaderApiKey" type="password" placeholder="Wallet API key" autocomplete="off" />
+          <button
+            id="accessHeaderApiKeyVisibilityButton"
+            class="button-ghost access-inline-icon-button"
+            type="button"
+            aria-label="Show wallet API key"
+            title="Show wallet API key"
+            data-target-input="accessHeaderApiKey"
+            data-show-label="Show wallet API key"
+            data-hide-label="Hide wallet API key"
+          >
+            <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 3C4.2 3 1.6 6.3 1 8c.6 1.7 3.2 5 7 5s6.4-3.3 7-5c-.6-1.7-3.2-5-7-5Zm0 8.4A3.4 3.4 0 1 1 8 4.6a3.4 3.4 0 0 1 0 6.8Zm0-5.4A2 2 0 1 0 8 10a2 2 0 0 0 0-4Z" fill="currentColor"/></svg>
+            <span>Show</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <section class="panel access-hero">
+      <div>
+        <div class="kicker">Access desk</div>
+        <h1>Simple access for personal trading and automation.</h1>
+        <p class="field-help">Use the personal wallet surface for your own trading key. Switch to agent wallet when you want a separate wallet with clear safety settings for automation.</p>
+      </div>
+      <div class="access-hero-pills">
+        <span class="pill">Generate</span>
+        <span class="pill is-good">Check key</span>
+        <span class="pill is-warn">Agent settings</span>
+      </div>
+    </section>
+
+    <section class="access-mode-strip" aria-label="Access mode switch">
+      <button id="accessModeWalletButton" class="mode-pill is-active" type="button">Personal wallet</button>
+      <button id="accessModeAgentButton" class="mode-pill" type="button">Agent wallet</button>
+    </section>
+
+    <section id="walletSurface" class="access-surface is-active">
+      <div class="access-grid access-grid-wallet">
+        <article class="panel access-card">
+          <div class="access-card-head">
+            <div>
+              <h2>Create personal wallet</h2>
+              <p class="field-help">One click returns public key, private key, and API key exactly once.</p>
+            </div>
+            <button id="generateWalletButton" class="button-primary" type="button">Generate wallet</button>
+          </div>
+          <div class="access-warning" role="note">
+            <strong>Important:</strong>
+            <span>Private key and API key are shown one time during generation. If you lose them later, they cannot be restored.</span>
+          </div>
+          <div id="walletGenerateStatus" class="access-inline-status" data-tone="idle">Idle. Ready to generate.</div>
+          <div id="walletGenerateTools" class="access-bundle-tools" hidden>
+            <button class="button-ghost access-bundle-tool-button" type="button" data-bundle-action="copy-all" data-bundle-kind="wallet" title="Copy all wallet keys">
+              <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M5 2.5A1.5 1.5 0 0 1 6.5 1h5A1.5 1.5 0 0 1 13 2.5v7A1.5 1.5 0 0 1 11.5 11h-5A1.5 1.5 0 0 1 5 9.5v-7Zm1.5-.1a.1.1 0 0 0-.1.1v7c0 .1 0 .1.1.1h5c.1 0 .1 0 .1-.1v-7c0-.1 0-.1-.1-.1h-5ZM3.5 5A1.5 1.5 0 0 0 2 6.5v7A1.5 1.5 0 0 0 3.5 15h5A1.5 1.5 0 0 0 10 13.5V13H8.6v.5c0 .1 0 .1-.1.1h-5c-.1 0-.1 0-.1-.1v-7c0-.1 0-.1.1-.1H4V5H3.5Z" fill="currentColor"/></svg>
+              <span>Copy all</span>
+            </button>
+            <button class="button-ghost access-bundle-tool-button" type="button" data-bundle-action="download" data-bundle-kind="wallet" title="Save wallet bundle as markdown">
+              <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 1a.7.7 0 0 1 .7.7v6.1l1.7-1.7a.7.7 0 1 1 1 1L8.5 10a.7.7 0 0 1-1 0L4.6 7.1a.7.7 0 1 1 1-1l1.7 1.7V1.7A.7.7 0 0 1 8 1Zm-5 11.3c0-.4.3-.7.7-.7h8.6a.7.7 0 1 1 0 1.4H3.7a.7.7 0 0 1-.7-.7Z" fill="currentColor"/></svg>
+              <span>Save .md</span>
+            </button>
+          </div>
+          <div id="walletGenerateResult" class="access-result-grid access-result-empty">
+            <div class="result-empty">No wallet bundle generated yet.</div>
+          </div>
+        </article>
+
+        <article class="panel access-card">
+          <div class="access-card-head">
+            <div>
+              <h2>Check current trading key</h2>
+              <p class="field-help">Uses the key in the header on the right so you can confirm which wallet it belongs to.</p>
+            </div>
+            <button id="verifyWalletButton" class="button-secondary" type="button">Verify key</button>
+          </div>
+          <div id="walletVerifyStatus" class="access-inline-status" data-tone="idle">Idle. Waiting for an API key.</div>
+          <div id="walletVerifyResult" class="access-result-grid access-result-empty">
+            <div class="result-empty">Verification output will appear here.</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="agentSurface" class="access-surface" hidden>
+      <div class="access-grid">
+        <article class="panel access-card">
+          <div class="access-card-head">
+            <div>
+              <h2>Generate agent wallet</h2>
+              <p class="field-help">Creates a separate wallet for automation with one trading key and one settings key.</p>
+            </div>
+            <button id="generateAgentButton" class="button-primary" type="button">Generate agent</button>
+          </div>
+          <div class="access-warning" role="note">
+            <strong>Important:</strong>
+            <span>Private key, execution key, and settings key are shown one time during generation. If you lose them later, they cannot be restored.</span>
+          </div>
+          <div id="agentGenerateStatus" class="access-inline-status" data-tone="idle">Idle. Ready to generate.</div>
+          <div id="agentGenerateTools" class="access-bundle-tools" hidden>
+            <button class="button-ghost access-bundle-tool-button" type="button" data-bundle-action="copy-all" data-bundle-kind="agent" title="Copy all agent keys">
+              <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M5 2.5A1.5 1.5 0 0 1 6.5 1h5A1.5 1.5 0 0 1 13 2.5v7A1.5 1.5 0 0 1 11.5 11h-5A1.5 1.5 0 0 1 5 9.5v-7Zm1.5-.1a.1.1 0 0 0-.1.1v7c0 .1 0 .1.1.1h5c.1 0 .1 0 .1-.1v-7c0-.1 0-.1-.1-.1h-5ZM3.5 5A1.5 1.5 0 0 0 2 6.5v7A1.5 1.5 0 0 0 3.5 15h5A1.5 1.5 0 0 0 10 13.5V13H8.6v.5c0 .1 0 .1-.1.1h-5c-.1 0-.1 0-.1-.1v-7c0-.1 0-.1.1-.1H4V5H3.5Z" fill="currentColor"/></svg>
+              <span>Copy all</span>
+            </button>
+            <button class="button-ghost access-bundle-tool-button" type="button" data-bundle-action="download" data-bundle-kind="agent" title="Save agent bundle as markdown">
+              <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 1a.7.7 0 0 1 .7.7v6.1l1.7-1.7a.7.7 0 1 1 1 1L8.5 10a.7.7 0 0 1-1 0L4.6 7.1a.7.7 0 1 1 1-1l1.7 1.7V1.7A.7.7 0 0 1 8 1Zm-5 11.3c0-.4.3-.7.7-.7h8.6a.7.7 0 1 1 0 1.4H3.7a.7.7 0 0 1-.7-.7Z" fill="currentColor"/></svg>
+              <span>Save .md</span>
+            </button>
+          </div>
+          <div id="agentGenerateResult" class="access-result-grid access-result-empty">
+            <div class="result-empty">No agent wallet bundle generated yet.</div>
+          </div>
+        </article>
+
+        <article class="panel access-card">
+          <div class="access-card-head">
+            <div>
+              <h2>Open and tune agent wallet</h2>
+              <p class="field-help">Paste the agent settings key once to see balance, recent actions, and the main safety switches.</p>
+            </div>
+          </div>
+          <label class="access-field">Agent settings key
+            <div class="access-secret-input">
+              <input id="agentSettingsKeyInput" type="password" placeholder="Paste agent settings key" autocomplete="off" />
+              <button
+                id="agentSettingsKeyVisibilityButton"
+                class="button-ghost access-inline-icon-button"
+                type="button"
+                aria-label="Show agent settings key"
+                title="Show agent settings key"
+                data-target-input="agentSettingsKeyInput"
+                data-show-label="Show agent settings key"
+                data-hide-label="Hide agent settings key"
+              >
+                <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 3C4.2 3 1.6 6.3 1 8c.6 1.7 3.2 5 7 5s6.4-3.3 7-5c-.6-1.7-3.2-5-7-5Zm0 8.4A3.4 3.4 0 1 1 8 4.6a3.4 3.4 0 0 1 0 6.8Zm0-5.4A2 2 0 1 0 8 10a2 2 0 0 0 0-4Z" fill="currentColor"/></svg>
+                <span>Show</span>
+              </button>
+            </div>
+          </label>
+          <div class="access-actions-row">
+            <button id="loadAgentButton" class="button-secondary" type="button">Open wallet</button>
+            <button id="saveAgentSettingsButton" class="button-primary" type="button">Save settings</button>
+          </div>
+          <div id="agentLoadStatus" class="access-inline-status" data-tone="idle">Idle. Waiting for a settings key.</div>
+
+          <div class="access-summary-grid">
+            <div class="access-summary-card">
+              <span>Wallet</span>
+              <strong id="agentSummaryPublicKey">—</strong>
+            </div>
+            <div class="access-summary-card">
+              <span>SOL</span>
+              <strong id="agentSummarySol">—</strong>
+            </div>
+            <div class="access-summary-card">
+              <span>Success rate</span>
+              <strong id="agentSummarySuccess">—</strong>
+            </div>
+            <div class="access-summary-card">
+              <span>Last action</span>
+              <strong id="agentSummaryLastAction">—</strong>
+            </div>
+          </div>
+
+          <form id="agentSettingsForm" class="access-settings-form">
+            <div class="access-settings-grid">
+              <label class="access-toggle-card"><input id="capLightningTrade" type="checkbox" /> <span>Lightning buy and sell</span></label>
+              <label class="access-toggle-card"><input id="capSwap" type="checkbox" /> <span>Swaps</span></label>
+              <label class="access-toggle-card"><input id="capTransfer" type="checkbox" /> <span>Transfers</span></label>
+              <label class="access-toggle-card"><input id="capTokenCreate" type="checkbox" /> <span>Token launch</span></label>
+              <label class="access-toggle-card"><input id="capTokenClaim" type="checkbox" /> <span>Creator claim</span></label>
+            </div>
+            <div class="access-limit-grid">
+              <label class="access-field">Max per action, SOL
+                <input id="limitPerTxSol" inputmode="decimal" placeholder="0.25" />
+              </label>
+              <label class="access-field">Rolling limit, SOL
+                <input id="limitRollingWindowSol" inputmode="decimal" placeholder="1.00" />
+              </label>
+            </div>
+          </form>
+
+          <div>
+            <div class="access-subhead">
+              <strong>Recent agent actions</strong>
+              <span class="field-help">Last 8 recorded actions for this agent wallet.</span>
+            </div>
+            <div id="agentHistoryList" class="access-history-list">
+              <div class="result-empty">Recent agent actions will appear here.</div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <div id="toastStack" class="toast-stack" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="/js/access.js"></script>
+</body>
+</html>

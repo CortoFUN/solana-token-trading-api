@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Corto Data Stream JSON Contract</title>
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body class="reference-page">
+    <div class="reference-shell">
+      <header class="reference-header">
+        <div>
+          <p class="eyebrow">Public reference</p>
+          <h1>JSON Contract</h1>
+          <p class="reference-copy">
+            This page describes the current public JSON surface: request messages, service envelopes, and the guarantee model clients should rely on.
+          </p>
+        </div>
+      </header>
+
+      <nav class="reference-nav">
+        <a class="reference-link" href="./index.html">Overview</a>
+        <a class="reference-link is-active" href="./json-contract.html">JSON contract</a>
+        <a class="reference-link" href="./create-event.html">Create</a>
+        <a class="reference-link" href="./trade-event.html">Trade</a>
+        <a class="reference-link" href="./migration-event.html">Migration</a>
+        <a class="reference-link" href="./create-pool-event.html">CreatePool</a>
+        <a class="reference-link" href="./liquidity-event.html">Liquidity</a>
+        <a class="reference-link" href="./burn-event.html">Burn</a>
+      </nav>
+
+      <main class="reference-grid">
+        <div class="reference-stack">
+          <section class="reference-panel">
+            <p class="section-kicker">Guarantee model</p>
+            <h2>How to read field stability</h2>
+            <table class="reference-table">
+              <thead>
+                <tr>
+                  <th>Level</th>
+                  <th>Meaning</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Key present</td>
+                  <td>The property is included in every object of that family.</td>
+                </tr>
+                <tr>
+                  <td>Value reliable</td>
+                  <td>The client can treat the value as currently guaranteed on the supported path.</td>
+                </tr>
+                <tr>
+                  <td>Value conditional</td>
+                  <td>The key is present, but the value can be null, transport-specific, pool-specific, or runtime-dependent.</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section class="reference-panel">
+            <p class="section-kicker">Client messages</p>
+            <h2>WebSocket request types</h2>
+            <pre>{
+  "type": "subscribe",
+  "mode": "all"
+}</pre>
+            <pre>{
+  "type": "subscribe",
+  "mode": "mints"
+}</pre>
+            <pre>{
+  "type": "subscribe",
+  "events": ["create"],
+  "pools": ["letsbonk.fun"],
+  "create": {
+    "detail": "mid"
+  }
+}</pre>
+            <pre>{
+  "type": "unsubscribe",
+  "events": ["trade"],
+  "pools": ["letsbonk.fun"]
+}</pre>
+            <pre>{
+  "type": "current_state"
+}</pre>
+            <ul>
+              <li>If mode is present, the server expands it into the effective filter automatically.</li>
+              <li>Supported quick modes are all, mints, trades, migrations, and pools.</li>
+              <li>Mode must not be combined with events or pools in the same message.</li>
+              <li>If events are omitted, the request means all currently deliverable events.</li>
+              <li>If pools are omitted, the request means all currently available pools.</li>
+              <li>The trade alias expands to buy plus sell.</li>
+              <li>Create detail is an optional layer on the same subscribe path. Public values are min, mid, and full.</li>
+            </ul>
+          </section>
+
+          <section class="reference-panel">
+            <p class="section-kicker">Create contract note</p>
+            <h2>Create can be quote-aware</h2>
+            <ul>
+              <li>SOL quote create paths expose solAmount, solInPool, vSolInBondingCurve, and marketCapSol.</li>
+              <li>Non-SOL launchpad create paths expose quoteInPool, vQuoteInBondingCurve, and marketCapQuote instead of pretending the same values are SOL.</li>
+              <li>Clients should branch on quoteMint rather than assuming every create pair is SOL-based.</li>
+            </ul>
+          </section>
+
+          <section class="reference-panel">
+            <p class="section-kicker">Service envelopes</p>
+            <h2>Control-plane response shape</h2>
+            <pre>{
+  "type": "service",
+  "name": "handshake",
+  "state": {
+    "status": "connected",
+    "availablePools": ["pump.swap", "raydium.amm", "raydium.cpmm", "meteora.dlmm", "letsbonk.fun", "meteora.damm-v1", "meteora.damm-v2", "bags.fm"],
+    "availableEvents": ["create", "trade", "buy", "sell", "migration", "createPool", "addLiquidity", "removeLiquidity", "burn"],
+    "supportedModes": ["all", "mints", "trades", "migrations", "pools"],
+    "supportedMessages": ["subscribe", "unsubscribe", "current_state"],
+    "effectiveFilter": {
+      "mode": "none",
+      "subscriptions": {},
+      "graceActive": true
+    },
+    "subscriptionGraceMs": 3000
+  }
+}</pre>
+            <pre>{
+  "type": "service",
+  "name": "subscription_ack",
+  "action": "subscribe",
+  "state": {
+    "availablePools": ["pump.swap", "raydium.amm", "raydium.cpmm", "meteora.dlmm", "letsbonk.fun", "meteora.damm-v1", "meteora.damm-v2", "bags.fm"],
+    "availableEvents": ["create", "trade", "buy", "sell", "migration", "createPool", "addLiquidity", "removeLiquidity", "burn"],
+    "supportedModes": ["all", "mints", "trades", "migrations", "pools"],
+    "supportedMessages": ["subscribe", "unsubscribe", "current_state"],
+    "effectiveFilter": {
+      "mode": "all",
+      "subscriptions": {},
+      "graceActive": false
+    }
+  }
+}</pre>
+            <pre>{
+  "type": "service",
+  "name": "current_state",
+  "state": {
+    "availablePools": ["pump.swap", "raydium.amm", "raydium.cpmm", "meteora.dlmm", "letsbonk.fun", "meteora.damm-v1", "meteora.damm-v2", "bags.fm"],
+    "availableEvents": ["create", "trade", "buy", "sell", "migration", "createPool", "addLiquidity", "removeLiquidity", "burn"],
+    "supportedModes": ["all", "mints", "trades", "migrations", "pools"],
+    "supportedMessages": ["subscribe", "unsubscribe", "current_state"],
+    "effectiveFilter": {
+      "mode": "custom",
+      "subscriptions": {
+        "create": ["bags.fm", "letsbonk.fun", "pump.fun"],
+        "createPool": ["bags.fm", "pump.swap"]
+      },
+      "graceActive": false
+    }
+  }
+}</pre>
+            <pre>{
+  "type": "service",
+  "name": "error",
+  "state": {
+    "availablePools": ["pump.swap", "raydium.amm", "raydium.cpmm", "meteora.dlmm", "letsbonk.fun", "meteora.damm-v1", "meteora.damm-v2", "bags.fm"],
+    "availableEvents": ["create", "trade", "buy", "sell", "migration", "createPool", "addLiquidity", "removeLiquidity", "burn"],
+    "supportedModes": ["all", "mints", "trades", "migrations", "pools"],
+    "supportedMessages": ["subscribe", "unsubscribe", "current_state"],
+    "effectiveFilter": {
+      "mode": "none",
+      "subscriptions": {},
+      "graceActive": true
+    }
+  },
+  "error": {
+    "code": "invalid_subscription",
+    "message": "Do not combine mode with events or pools in the same subscription message.",
+    "details": {
+      "mode": "all",
+      "supportedModes": ["all", "mints", "trades", "migrations", "pools"]
+    }
+  }
+}</pre>
+            <table class="reference-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Purpose</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>handshake</td>
+                  <td>Initial connection state and available surface</td>
+                </tr>
+                <tr>
+                  <td>subscription_ack</td>
+                  <td>Confirmation after subscribe or unsubscribe changes</td>
+                </tr>
+                <tr>
+                  <td>current_state</td>
+                  <td>Snapshot of current filter and upstream state</td>
+                </tr>
+                <tr>
+                  <td>error</td>
+                  <td>Structured error response for invalid requests or rejected actions</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+        </div>
+
+        <aside class="reference-stack">
+          <section class="reference-panel">
+            <p class="section-kicker">Example handshake</p>
+            <h2>Current shape</h2>
+            <pre>{
+  "type": "service",
+  "name": "handshake",
+  "state": {
+    "status": "connected",
+    "availablePools": ["pump.swap", "raydium.amm", "raydium.cpmm", "meteora.dlmm", "letsbonk.fun", "meteora.damm-v1", "meteora.damm-v2", "bags.fm"],
+    "availableEvents": ["create", "trade", "buy", "sell", "migration", "createPool", "addLiquidity", "removeLiquidity", "burn"],
+    "supportedModes": ["all", "mints", "trades", "migrations", "pools"],
+    "supportedMessages": ["subscribe", "unsubscribe", "current_state"],
+    "effectiveFilter": {
+      "mode": "none",
+      "subscriptions": {},
+      "graceActive": true
+    },
+    "subscriptionGraceMs": 3000
+  }
+}</pre>
+            <ul>
+              <li>The public contract is the WebSocket surface only. This reference intentionally stays focused on that public surface.</li>
+              <li>These envelope examples are full current public shapes, not shortened pseudocode.</li>
+            </ul>
+          </section>
+
+          <section class="reference-panel">
+            <p class="section-kicker">Real event examples</p>
+            <h2>Observed on-chain payloads</h2>
+            <table class="reference-table">
+              <thead>
+                <tr>
+                  <th>Family</th>
+                  <th>Signature</th>
+                  <th>Mint</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Create</td>
+                  <td>ELevMPFCPvAkXGMc8xWbhHYdp9J99mUVKciTud65MHQ5SZMBdRRBWKteD7h64x1xCa7PZ3fmDTvVbb58hsKWZEi</td>
+                  <td>5Tb4cqwcL368sobFYTkSmk5GwQhD5uTZEur4y7tMpump</td>
+                </tr>
+                <tr>
+                  <td>Trade</td>
+                  <td>D3wmksitRMqPQAoKGGDTbjnYCcUywgJ3bVqVQeWe2oZ2s1XGpv6xYVmbKh7gqAdmZqjzgGDapKG4LrxGtWv3K7k</td>
+                  <td>5tHSWRiZXHkdCSYvYgVtjy1KpB2a19oUhmpuLiBgbonk</td>
+                </tr>
+                <tr>
+                  <td>Migration</td>
+                  <td>4nownD6mfEWqPobc7TrfYk6VyTiqdyzkXqgSbJb2hNVxsXoNfAQADJBRP3JzuYX921NTyY9TLNVZnREdcbo3D4NP</td>
+                  <td>3x2vP4Lx9fF2wq1sV7Yf7v4PpVv8pQ6d4e4NLq7Rpump</td>
+                </tr>
+                <tr>
+                  <td>CreatePool</td>
+                  <td>3E6YyV3Jp4m8rS9yM6aQYz4jNwQ2Yp7m8j5p2xG7nT4wQ9f1rJ2sXb8mV4tQ1aP5k3cN6vR2qJ8yH7mL5dF3uP2</td>
+                  <td>MeteoraV2Mint11111111111111111111111111111111</td>
+                </tr>
+                <tr>
+                  <td>Liquidity</td>
+                  <td>2oGm9yW4uJ7cN5rQ1pVx8mK3dT6sL2aF9qH4wE7yR1uP8bN3jM6xC5tZ2kV7pQ4fD1sH9mL6rT2yJ8cV3nP5aQ1</td>
+                  <td>MeteoraV2BaseMint111111111111111111111111111</td>
+                </tr>
+                <tr>
+                  <td>Burn</td>
+                  <td>no current production observed payload</td>
+                  <td>reserved contract only</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section class="reference-panel">
+            <p class="section-kicker">Client rule</p>
+            <h2>Do not over-assume</h2>
+            <ul>
+              <li>Read schemaVersion and txType before branching.</li>
+              <li>Treat null as a valid contract outcome for conditional values.</li>
+              <li>Adjacent event pages use current contract examples taken from observed payloads or current builder fixtures.</li>
+              <li>Do not assume historical or experimental pool paths exist just because they exist elsewhere in the repository.</li>
+            </ul>
+          </section>
+        </aside>
+      </main>
+    </div>
+    <script src="./reference-highlight.js"></script>
+  </body>
+</html>

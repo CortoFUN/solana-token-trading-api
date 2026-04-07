@@ -1,0 +1,12 @@
+{
+  "name": "corto-fun-dev-analytics-board",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^4.21.2"
+  }
+}

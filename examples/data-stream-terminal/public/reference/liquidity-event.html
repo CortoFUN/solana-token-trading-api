@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Corto Data Stream Liquidity Event</title>
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body class="reference-page">
+    <div class="reference-shell">
+      <header class="reference-header">
+        <div>
+          <p class="eyebrow">Public reference</p>
+          <h1>Liquidity Event Reference</h1>
+          <p class="reference-copy">
+            Liquidity events cover both add and remove directions through one schema. Clients should route by txType instead of assuming one direction from the page alone.
+          </p>
+        </div>
+      </header>
+
+      <nav class="reference-nav">
+        <a class="reference-link" href="./index.html">Overview</a>
+        <a class="reference-link" href="./json-contract.html">JSON contract</a>
+        <a class="reference-link" href="./create-event.html">Create</a>
+        <a class="reference-link" href="./trade-event.html">Trade</a>
+        <a class="reference-link" href="./migration-event.html">Migration</a>
+        <a class="reference-link" href="./create-pool-event.html">CreatePool</a>
+        <a class="reference-link is-active" href="./liquidity-event.html">Liquidity</a>
+        <a class="reference-link" href="./burn-event.html">Burn</a>
+      </nav>
+
+      <main class="reference-grid">
+        <div class="reference-stack">
+          <section class="reference-panel">
+            <p class="section-kicker">Contract</p>
+            <h2>Current public schema</h2>
+            <ul>
+              <li>schemaVersion: liquidity_event_v1</li>
+              <li>source: parsed_tx</li>
+              <li>txType: add or remove</li>
+              <li>tokensInPool and solInPool are allowed only when derivable from the current parsed transaction.</li>
+            </ul>
+          </section>
+
+          <section class="reference-panel">
+            <p class="section-kicker">Observed add</p>
+            <h2>Live add sample is still pending capture</h2>
+            <p>
+              This page uses live payloads where they were captured. A verified public addLiquidity sample is not included here yet, so it is intentionally left out until one is collected.
+            </p>
+          </section>
+
+          <section class="reference-panel">
+            <p class="section-kicker">Observed remove</p>
+            <h2>Pump swap removeLiquidity</h2>
+            <pre>{
+  "schemaVersion": "liquidity_event_v1",
+  "signature": "29VK4NCy6Z9V4p5FfMfRkrBbAUuqohM94FFMKZyGBk3TcZMMvfTSVPAZAhjZVLwqyA9dbHxysr5zg6RAgxURjAet",
+  "mint": "DeT7F7zHnrVDSWMgCwcw8zDh58yiunFf7EyqsCS7boHF",
+  "txType": "remove",
+  "pool": "pump-swap",
+  "poolCreatedBy": null,
+  "poolId": "BpA29pLCmYhxpx6cT4CPbp1zgTXnTYg674J8knthUG3L",
+  "price": 0.0000012357120790855732,
+  "source": "parsed_tx",
+  "slot": 409019854,
+  "block": 409019854,
+  "poolProgramId": "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA",
+  "instructionName": "Withdraw",
+  "hasError": false,
+  "timestamp": 1774541477000,
+  "txSigner": "893HQe5qsTmGxAMduhUWDJki5Hz7f7V5ExazwD8oXPUZ",
+  "lpMint": "GsJrZZgeumwqzyiXrzYoKrwnZxn7mxeAcurVvRaE5SiA",
+  "lpAmount": 25495097580611,
+  "baseVault": "39WYKRTM4oUYvPPnfdWTzo7EDPR5t56sn5y1ygTNc4AK",
+  "quoteVault": "HmTBkDH7HbvWwwFBm58kMorSjWX1c95adq7cn65C8gX4",
+  "baseMint": "DeT7F7zHnrVDSWMgCwcw8zDh58yiunFf7EyqsCS7boHF",
+  "quoteMint": "So11111111111111111111111111111111111111112",
+  "baseAmount": 825190689.284761,
+  "quoteAmount": 920.545497507,
+  "tokensInPool": 0.003237,
+  "solInPool": 4e-9
+}</pre>
+          </section>
+        </div>
+
+        <aside class="reference-stack">
+          <section class="reference-panel">
+            <p class="section-kicker">Guaranteed core</p>
+            <h2>Fields clients can rely on</h2>
+            <ul>
+              <li>signature, mint, txType, pool, poolId</li>
+              <li>source, slot, block, poolProgramId, instructionName, hasError</li>
+              <li>baseVault, quoteVault, baseMint, quoteMint</li>
+              <li>baseAmount, quoteAmount, tokensInPool, solInPool</li>
+            </ul>
+          </section>
+
+          <section class="reference-panel">
+            <p class="section-kicker">Conditional values</p>
+            <h2>Do not over-assume</h2>
+            <ul>
+              <li>poolCreatedBy can stay null unless lineage is proven.</li>
+              <li>lpMint and lpAmount are allowed but not universally guaranteed.</li>
+              <li>The same schema covers both add and remove; always branch by txType.</li>
+            </ul>
+          </section>
+        </aside>
+      </main>
+    </div>
+    <script src="./reference-highlight.js"></script>
+  </body>
+</html>

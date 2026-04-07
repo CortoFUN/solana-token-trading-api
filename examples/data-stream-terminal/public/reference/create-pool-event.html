@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Corto Data Stream CreatePool Event</title>
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body class="reference-page">
+    <div class="reference-shell">
+      <header class="reference-header">
+        <div>
+          <p class="eyebrow">Public reference</p>
+          <h1>CreatePool Event Reference</h1>
+          <p class="reference-copy">
+            CreatePool events describe the moment a target pool account is created. They are pool-side lifecycle events, not launch-side create events.
+          </p>
+        </div>
+      </header>
+
+      <nav class="reference-nav">
+        <a class="reference-link" href="./index.html">Overview</a>
+        <a class="reference-link" href="./json-contract.html">JSON contract</a>
+        <a class="reference-link" href="./create-event.html">Create</a>
+        <a class="reference-link" href="./trade-event.html">Trade</a>
+        <a class="reference-link" href="./migration-event.html">Migration</a>
+        <a class="reference-link is-active" href="./create-pool-event.html">CreatePool</a>
+        <a class="reference-link" href="./liquidity-event.html">Liquidity</a>
+        <a class="reference-link" href="./burn-event.html">Burn</a>
+      </nav>
+
+      <main class="reference-grid">
+        <div class="reference-stack">
+          <section class="reference-panel">
+            <p class="section-kicker">Contract</p>
+            <h2>Current public schema</h2>
+            <ul>
+              <li>schemaVersion: create_pool_event_v1</li>
+              <li>source: parsed_tx</li>
+              <li>txType: createPool</li>
+              <li>poolCreatedBy may carry upstream lineage only when proven by the current transaction or bounded allowed carry-forward.</li>
+            </ul>
+          </section>
+
+          <section class="reference-panel">
+            <p class="section-kicker">Observed payload</p>
+            <h2>Pump swap createPool</h2>
+            <pre>{
+  "schemaVersion": "create_pool_event_v1",
+  "signature": "4ViJScYg612DtdnV1iZKBDc2ZVnWwX1QAfurTcHNNNGkAoR3E2FnWdXXo34MAvk3TK8ux2mXKZPs5RHnhKN9uN4d",
+  "mint": "BKziAXvxrBYzvv6jCNFcduC1GbX5VSdKnF6yQEQXv3gQ",
+  "txType": "createPool",
+  "pool": "pump-swap",
+  "poolCreatedBy": null,
+  "poolId": "2tr8D5PHz1LfHZppK8EURU5UxiKNwPCGP7msohwXY1TF",
+  "price": 7.4999999925e-7,
+  "source": "parsed_tx",
+  "slot": 409019866,
+  "block": 409019866,
+  "poolProgramId": "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA",
+  "instructionName": "CreatePool",
+  "hasError": false,
+  "timestamp": 1774541482000,
+  "txSigner": "DyUsK6QtinjZcnb4LvZmqCQBSsDNAry2c1Sm3kBAdmwx",
+  "baseVault": "G14r618WxxFzkx1RVdtbo39kSWRyYFXM8eBXcF67wzc5",
+  "quoteVault": "CY9UKaMDmHuf1NTgPn8XPjzFAyBvmBgqSoLM8ZLbUD7V",
+  "lpMint": "AR2xBM1hrvhh4eiVtZRKxr3S45jQeuDWUw1vYg7Jo47U",
+  "baseMint": "BKziAXvxrBYzvv6jCNFcduC1GbX5VSdKnF6yQEQXv3gQ",
+  "quoteMint": "So11111111111111111111111111111111111111112",
+  "baseAmount": 1000000001,
+  "quoteAmount": 750,
+  "initialLiquidityTokenAmount": 1000000001,
+  "initialLiquidityQuoteAmount": 750
+}</pre>
+          </section>
+        </div>
+
+        <aside class="reference-stack">
+          <section class="reference-panel">
+            <p class="section-kicker">Guaranteed core</p>
+            <h2>Fields clients can rely on</h2>
+            <ul>
+              <li>signature, mint, txType, pool, poolId</li>
+              <li>source, slot, block, poolProgramId, instructionName, hasError</li>
+              <li>baseVault, quoteVault, baseMint, quoteMint</li>
+            </ul>
+          </section>
+
+          <section class="reference-panel">
+            <p class="section-kicker">Conditional values</p>
+            <h2>Do not over-assume</h2>
+            <ul>
+              <li>poolCreatedBy is lineage-sensitive, not universally guaranteed.</li>
+              <li>price exists only when both sides are proven from the current transaction.</li>
+              <li>lpMint and initial liquidity amounts are contract fields, but still conditional values.</li>
+            </ul>
+          </section>
+        </aside>
+      </main>
+    </div>
+    <script src="./reference-highlight.js"></script>
+  </body>
+</html>

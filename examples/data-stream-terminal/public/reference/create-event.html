@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Corto Data Stream Create Event</title>
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body class="reference-page">
+    <div class="reference-shell">
+      <header class="reference-header">
+        <div>
+          <p class="eyebrow">Public reference</p>
+          <h1>Create Event Reference</h1>
+          <p class="reference-copy">
+            Create events are designed to answer a practical question quickly: what was launched, how early is the position, and which values are safe for filtering or ranking.
+          </p>
+        </div>
+      </header>
+
+      <nav class="reference-nav">
+        <a class="reference-link" href="./index.html">Overview</a>
+        <a class="reference-link" href="./json-contract.html">JSON contract</a>
+        <a class="reference-link is-active" href="./create-event.html">Create</a>
+        <a class="reference-link" href="./trade-event.html">Trade</a>
+        <a class="reference-link" href="./migration-event.html">Migration</a>
+        <a class="reference-link" href="./create-pool-event.html">CreatePool</a>
+        <a class="reference-link" href="./liquidity-event.html">Liquidity</a>
+        <a class="reference-link" href="./burn-event.html">Burn</a>
+      </nav>
+
+      <main class="reference-grid">
+        <div class="reference-stack">
+          <section class="reference-panel">
+            <p class="section-kicker">Detail levels</p>
+            <h2>One create stream, multiple payload levels</h2>
+            <table class="reference-table">
+              <thead>
+                <tr>
+                  <th>Level</th>
+                  <th>Meaning</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>min</td>
+                  <td>Smallest public create payload for feed routing and fast inspection.</td>
+                </tr>
+                <tr>
+                  <td>mid</td>
+                  <td>min plus market, token, risk basics, and quote-aware create market cap fields.</td>
+                </tr>
+                <tr>
+                  <td>full</td>
+                  <td>min plus mid plus the rich public create shape.</td>
+                </tr>
+              </tbody>
+            </table>
+            <pre>{
+  "type": "subscribe",
+  "mode": "mints",
+  "create": {
+    "detail": "mid"
+  }
+}</pre>
+          </section>
+
+          <section class="reference-panel">
+            <p class="section-kicker">Field groups</p>
+            <h2>How create fields are organized</h2>
+            <table class="reference-table">
+              <thead>
+                <tr>
+                  <th>Group</th>
+                  <th>Use</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Core</td>
+                  <td>Fields that are meant to support strategy, alerting, and routing.</td>
+                </tr>
+                <tr>
+                  <td>Extended</td>
+                  <td>Useful fields that can be null or pool-specific.</td>
+                </tr>
+                <tr>
+                  <td>Service</td>
+                  <td>Additional analytics or pool-specific fields that stay out of the baseline public contract.</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section class="reference-panel">
+            <p class="section-kicker">Commonly useful values</p>
+            <h2>Fields clients usually care about first</h2>
+            <ul>
+              <li>mint, pool, poolProgramId</li>
+              <li>price, initialBuy, and solAmount only when the quote mint is SOL</li>
+              <li>tokensInPool plus either solInPool or quoteInPool depending on quoteMint</li>
+              <li>vTokensInBondingCurve plus either vSolInBondingCurve or vQuoteInBondingCurve</li>
+              <li>bondingCurveProgress when it is actually proven for the pool family</li>
+              <li>marketCapSol for SOL quote paths or marketCapQuote for non-SOL launchpad paths</li>
+              <li>appRiskScorePercent and riskFlags when exposed by the create path</li>
+            </ul>
+          </section>
+
+          <section class="reference-panel">
+            <p class="section-kicker">Quote-aware launchpads</p>
+            <h2>Non-SOL quote create fields</h2>
+            <ul>
+              <li>If quoteMint is not the SOL mint, price is still quote-per-token.</li>
+              <li>Use quoteInPool and vQuoteInBondingCurve instead of forcing the same value into SOL fields.</li>
+              <li>Use marketCapQuote for non-SOL launchpad create payloads unless a separate proven SOL conversion exists.</li>
+            </ul>
+          </section>
+
+          <section class="reference-panel">
+            <p class="section-kicker">Example shape</p>
+            <h2>Observed public payload</h2>
+            <pre>{
+  "schemaVersion": "create_event_v1",
+  "signature": "2i4j3aNSP4y6usMHwf4k8Gf5v8Cir6TcNiS7NK8CQsfcdwAGqXkrWKRPthCw7T9JpjsNo9hhzYzqDEYS6n4cMi6n",
+  "mint": "FZ6Aru2uHFD9GE2CYv5gXJaRzmWgynmHrGJJE2Nbpump",
+  "txType": "create",
+  "pool": "pump-fun",
+  "poolId": "7VtfL8fvgNfhz17qKRMjzQEXgbdpnHHHQRh54R9jP2RJ",
+  "price": 0.000016822350671360655,
+  "source": "parsed_tx",
+  "poolProgramId": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+  "routeProgramId": "JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4",
+  "bondingCurveAddress": "7VtfL8fvgNfhz17qKRMjzQEXgbdpnHHHQRh54R9jP2RJ",
+  "baseVaultAddress": null,
+  "quoteVaultAddress": null,
+  "txSigner": "6nqTtnfb26VdupoMfK8GUCRMcfvqrXGUKwvrS6hJ4Sv6",
+  "userTokenAccount": "9pfcmQcA4WYj3RFZyfZSMxJ6w3G8cLmD9NGsMGVFhjs5",
+  "initialBuy": 4347574.950355,
+  "solAmount": 0.202482957,
+  "reserveTokenBefore": 773006676.098323,
+  "reserveTokenAfter": 768659101.147968,
+  "reserveTokenDelta": -4347574.950354934,
+  "reserveSolBefore": 12930.651079083,
+  "reserveSolAfter": 12930.652946244,
+  "reserveSolDelta": 0.001867160999609041,
+  "tokensInPool": 768659101.147968,
+  "solInPool": 12930.652946244,
+  "quoteInPool": null,
+  "vTokensInBondingCurve": 841659101.147968,
+  "vSolInBondingCurve": 38.245888343,
+  "vQuoteInBondingCurve": null,
+  "priceBefore": 0.000016727735320927914,
+  "priceByTrade": 4.2947183681252165e-10,
+  "priceAfter": 0.000016822350671360655,
+  "priceSource": "virtual_curve",
+  "pooledSupplyShare": 0.7686591011479681,
+  "bondingCurveProgress": 23.13409,
+  "creatorBoughtOnCreate": true,
+  "creatorBuyShareOfSupply": 0.0043475749503549994,
+  "totalFeeLamports": 408877,
+  "priorityFeeLamports": 403877,
+  "usedJupiter": true,
+  "hasInnerSwaps": true,
+  "wrappedSolUsed": true,
+  "ataCreated": true,
+  "instructionName": "RouteV2",
+  "quoteMint": "So11111111111111111111111111111111111111112",
+  "quoteDecimals": 9,
+  "signerCount": 1,
+  "accountCount": 27,
+  "hasError": false,
+  "slotIndexHint": 5,
+  "rawEventName": "RouteV2",
+  "marketCapSol": 16822.350671360655,
+  "marketCapQuote": null,
+  "meteoraStepInputRaw": null,
+  "meteoraStepInputMint": null,
+  "meteoraStepOutputRaw": null,
+  "meteoraStepOutputMint": null,
+  "poolFeeRate": null,
+  "name": "World Coin",
+  "symbol": "WDC",
+  "uri": "https://ipfs.io/ipfs/bafkreigprzkemwzl7na532l3c2r3tt2rj57ntfrkm5zoejbyk2crgpv25m",
+  "metadataHost": "ipfs.io",
+  "imageUrl": "https://ipfs.io/ipfs/bafkreihwtrkc42uplmur4a33gvdk3ehctb7kqi3pnrw4hwj4hesw4rzhoi",
+  "creators": [],
+  "sellerFeeBasisPoints": null,
+  "migrationTokenThresholdRaw": null,
+  "migrationQuoteThresholdRaw": null,
+  "supply": 1000000000000000,
+  "supplyUi": 1000000000,
+  "creatorFeeAddress": "6nqTtnfb26VdupoMfK8GUCRMcfvqrXGUKwvrS6hJ4Sv6",
+  "mayhemMode": null,
+  "cashbackEnabled": null,
+  "mintAuthority": null,
+  "freezeAuthority": null,
+  "mintAuthorityDisabled": true,
+  "freezeAuthorityDisabled": true,
+  "tokenProgram": "spl-token-2022",
+  "token2022ExtensionFlags": {
+    "hasAny": false,
+    "extensionNames": [],
+    "hasTransferFee": false,
+    "hasTransferHook": false,
+    "hasMetadataPointer": false,
+    "hasGroupPointer": false,
+    "hasGroupMemberPointer": false,
+    "hasPermanentDelegate": false,
+    "hasInterestBearingConfig": false,
+    "hasCloseAuthority": false,
+    "hasDefaultAccountState": false,
+    "hasConfidentialTransfers": false
+  },
+  "tokenExtensions": {},
+  "appRiskScorePercent": 20,
+  "riskLevel": "LOW",
+  "riskFlags": [
+    "creator_bought_on_create"
+  ],
+  "riskModelVersion": "create-risk-v1",
+  "tradersInvolved": {
+    "6nqTtnfb26VdupoMfK8GUCRMcfvqrXGUKwvrS6hJ4Sv6": {}
+  },
+  "decimals": 6,
+  "block": 409019834,
+  "timestamp": 1774541469000
+}</pre>
+          </section>
+        </div>
+
+        <aside class="reference-stack">
+          <section class="reference-panel">
+            <p class="section-kicker">Known boundary</p>
+            <h2>Progress is not universal</h2>
+            <div class="fact-grid">
+              <div class="fact-card">
+                <span>pump-fun</span>
+                <strong>bondingCurveProgress is currently treated as proven.</strong>
+              </div>
+              <div class="fact-card">
+                <span>Other families</span>
+                <strong>Progress should be treated as null unless the exact formula is proven for that family.</strong>
+              </div>
+            </div>
+          </section>
+
+          <section class="reference-panel">
+            <p class="section-kicker">Client guidance</p>
+            <h2>Safe create parsing</h2>
+            <ul>
+              <li>Use pool and poolProgramId for routing.</li>
+              <li>Do not assume every create field is equally strong across every pool family.</li>
+              <li>Keep conditional values nullable in your own model.</li>
+            </ul>
+          </section>
+        </aside>
+      </main>
+    </div>
+    <script src="./reference-highlight.js"></script>
+  </body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "corto-fun-trading-terminal-v1-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^4.21.2",
+    "multer": "^1.4.5-lts.2",
+    "ws": "^8.18.3"
+  }
+}
