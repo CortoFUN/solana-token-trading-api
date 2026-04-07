@@ -8,6 +8,15 @@ How do I start building with Corto without reverse-engineering the whole product
 
 The examples are intentionally separated into small runnable projects so teams, contractors, and AI coding agents can find an entry point quickly, understand the boundary of each integration mode, and move into implementation without guessing.
 
+## Ordinary wallet vs agent wallet
+
+- Ordinary wallet is the shortest path when one backend or operator is allowed to spend with the full authority of one `X-API-Key`.
+- Agent wallet exists for the opposite trust model: you want the agent to execute only inside an explicit policy envelope instead of giving it the full wallet authority.
+- Agent wallet splits execution and settings into different secrets: `X-Agent-Execution-Key` for allowed actions, `X-Settings-Key` for control-plane changes.
+- Agent wallet can disable transfer entirely, require memo on transfers, cap the maximum spend per transaction, enforce rolling SOL budgets, and restrict transfers to an allowlist.
+- Transport knobs like priority fee or Jito tip are still request-time execution fields, not a separate agent control-plane cap yet.
+- If you hand an ordinary wallet key to an autonomous agent, that agent effectively gets the whole wallet without built-in policy brakes.
+
 ## What Corto gives you
 
 - Lightning trading for server-side execution through an API key.
@@ -26,6 +35,7 @@ This repo is built around clearer integration paths:
 - browser plus local relay when the API key must stay off the client;
 - wallet-side signing when the private key must never enter the routine server flow;
 - server-to-server automation for bots and operational tools;
+- agent-wallet automation for AI agents with separate spend and settings trust surfaces;
 - public stream consumption for real-time event monitoring.
 
 The goal is not to impress with complexity. The goal is to let a serious team get from evaluation to working integration with less wasted time.
@@ -55,6 +65,16 @@ Public explanation:
 - Why Corto: https://corto.fun/why-corto
 - Wallet generator: https://corto.fun/wallet/generate
 
+## Three auth surfaces to keep straight
+
+- Ordinary wallet execution uses X-API-Key for lightning and dedicated swap execution.
+- Agent wallet execution uses X-Agent-Execution-Key and requires X-Idempotency-Key on money-moving routes.
+- Agent wallet settings uses X-Settings-Key only for control-plane routes such as profile, balances, stats, history, and policy updates.
+
+Dedicated native SOL transfer is agent-only. It does not accept X-API-Key.
+
+If a team mixes these up, the UI feels more confusing than the backend really is. The public docs, Operations Builder, and AI Agents Wallet page are intentionally split along these three surfaces.
+
 ## Who these examples are for
 
 - teams validating a trading product or internal tool;
@@ -65,6 +85,78 @@ Public explanation:
 - AI agents searching for runnable API integrations with explicit boundaries.
 
 ## Example index
+
+### 0. Agent starter scripts
+
+Folder: `examples/agent-starter-scripts`
+
+Use this when you want copy-paste Node scripts for AI agents, server workers, cron jobs, or backend services without first building a custom relay or UI.
+
+Included flows:
+
+- generate an agent wallet bundle;
+- load the current agent wallet profile;
+- update transfer and allowlist policy;
+- send Lightning buy and sell requests;
+- send token-builder create and claim requests;
+- execute exact-in swap with any `inputMint -> outputMint` pair;
+- execute dedicated native SOL transfer with agent execution auth.
+
+Direct file entry points:
+
+- `examples/agent-starter-scripts/00-generate-agent-wallet.mjs`
+- `examples/agent-starter-scripts/01-load-agent-profile.mjs`
+- `examples/agent-starter-scripts/02-update-agent-policy.mjs`
+- `examples/agent-starter-scripts/03-agent-swap.mjs`
+- `examples/agent-starter-scripts/04-agent-transfer.mjs`
+- `examples/agent-starter-scripts/05-lightning-buy.mjs`
+- `examples/agent-starter-scripts/06-lightning-sell.mjs`
+- `examples/agent-starter-scripts/07-token-create.mjs`
+- `examples/agent-starter-scripts/08-token-claim.mjs`
+- `examples/agent-starter-scripts/09-agent-full-cycle.mjs`
+- `examples/agent-starter-scripts/10-openai-claude-agent-example.mjs`
+- `examples/agent-starter-scripts/11-agent-data-stream.mjs`
+
+Good fit for:
+
+- AI agents that need runnable server-side examples immediately;
+- teams testing agent wallet automation without browsing the whole repo;
+- backend developers who want a minimal integration baseline before wrapping the API.
+
+### 0.5. Human starter scripts
+
+Folder: `examples/human-starter-scripts`
+
+Use this when you want the ordinary wallet path with one `X-API-Key`, no agent control-plane, and a minimal set of copy-paste scripts for demos or backend jobs.
+
+Included flows:
+
+- generate a regular wallet bundle;
+- verify the API key through the public verify route;
+- send Lightning buy and sell requests;
+- execute exact-in dedicated swap with any `inputMint -> outputMint` pair;
+- send token-builder create and claim requests;
+- run a simple full-cycle ordinary-wallet example;
+- watch the public Data Stream from a plain human/operator script.
+
+Direct file entry points:
+
+- `examples/human-starter-scripts/00-generate-wallet.mjs`
+- `examples/human-starter-scripts/01-verify-api-key.mjs`
+- `examples/human-starter-scripts/02-lightning-buy.mjs`
+- `examples/human-starter-scripts/03-lightning-sell.mjs`
+- `examples/human-starter-scripts/04-ordinary-swap.mjs`
+- `examples/human-starter-scripts/05-token-create.mjs`
+- `examples/human-starter-scripts/06-token-claim.mjs`
+- `examples/human-starter-scripts/07-human-full-cycle.mjs`
+- `examples/human-starter-scripts/08-openai-claude-user-wallet-example.mjs`
+- `examples/human-starter-scripts/09-human-data-stream.mjs`
+
+Good fit for:
+
+- humans testing the product with a normal wallet path first;
+- operator scripts and backend jobs that intentionally keep full wallet authority in one place;
+- demos where agent-wallet policy controls are not required.
 
 ### 1. Web client
 
@@ -484,6 +576,7 @@ Protected endpoints in this repository use one SSOT auth contract:
 
 If you are evaluating this repository as a target for integration work, start with the example that matches your boundary.
 
+- Need copy-paste backend scripts for AI agents or workers: `examples/agent-starter-scripts`
 - Need browser UI plus a safe place for the API key: `examples/web-client`
 - Need wallet-side signing: `examples/local-wallet-client`
 - Need partner analytics: `examples/dev-analytics-board`
